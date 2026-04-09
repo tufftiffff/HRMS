@@ -1,0 +1,9 @@
+/* ==============================
+   UTILITIES
+============================== */
+
+.sidebar-divider {
+  border: 0;
+  border-top: 1px solid #334155;
+  margin: 15px 0;
+}

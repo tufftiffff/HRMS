@@ -1,0 +1,74 @@
+/* ==============================
+   ANNOUNCEMENTS MODULE
+============================== */
+
+/* Link style for announcement titles */
+.link-title {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link-title:hover {
+  text-decoration: underline;
+}
+
+/* Badges for priority */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge-critical {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-important {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-normal {
+  background: #e5f3ff;
+  color: #1e40af;
+}
+
+/* Announcement detail card */
+.detail-card {
+  background: #ffffff;
+  padding: 22px 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(15,23,42,0.06);
+  margin-top: 20px;
+}
+
+.detail-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-meta {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.detail-body p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.detail-actions {
+  margin-top: 25px;
+}

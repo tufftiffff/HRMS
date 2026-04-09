@@ -1,0 +1,87 @@
+/* Container */
+.applications-container {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    border: 1px solid #e8e8e8;
+}
+
+/* Table */
+.applications-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px; /* Floating row look */
+}
+
+.applications-table thead th {
+    padding: 12px 14px;
+    font-size: 14px;
+    background: #f8f9fa;
+    color: #555;
+    font-weight: 600;
+    border-bottom: 2px solid #e4e6e7;
+}
+
+.applications-table tbody tr {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+}
+
+.applications-table tbody td {
+    padding: 14px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* Remove last border under last row */
+.applications-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge.submitted {
+    background: #e3f0ff;
+    color: #2b6cb0;
+}
+
+.badge.reviewing {
+    background: #fff8db;
+    color: #b08900;
+}
+
+.badge.rejected {
+    background: #ffe3e3;
+    color: #c53030;
+}
+
+.badge.shortlisted {
+    background: #e5ffe8;
+    color: #2f855a;
+}
+
+/* View Button */
+.btn-view {
+    background: #4c8bf5;
+    padding: 6px 14px;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-view:hover {
+    background: #3b73d9;
+}

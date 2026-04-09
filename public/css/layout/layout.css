@@ -1,0 +1,209 @@
+/* ==============================
+   HEADER
+============================== */
+header {
+  background: #1e40af;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header .title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+header .user-info {
+  background: #2563eb;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* ==============================
+   LAYOUT CONTAINER / SIDEBAR
+============================== */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #0f172a, #1e3a8a);
+  color: #9ca3af;
+  padding: 25px 20px;
+}
+
+/* Sidebar base links */
+.sidebar ul {
+  list-style: none;
+  margin-top: 20px;
+}
+
+.sidebar li {
+  margin-bottom: 15px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #2563eb;
+  color: #fff;
+  transform: translateX(5px);
+}
+
+/* Sidebar dropdown groups */
+.sidebar-group {
+  margin-bottom: 10px;
+}
+
+.sidebar-toggle {
+  text-decoration: none;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidebar-toggle .left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-toggle i {
+  font-size: 14px;
+}
+
+.sidebar-toggle:hover {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.sidebar-group.open .sidebar-toggle {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.sidebar-toggle .arrow {
+  transition: transform 0.2s;
+}
+
+.sidebar-group.open .sidebar-toggle .arrow {
+  transform: rotate(90deg);
+}
+
+/* Supervisor OT Claims: downward chevron when expanded (like reference design) */
+.sidebar-group-ot .sidebar-toggle .arrow {
+  transition: transform 0.2s;
+}
+.sidebar-group-ot .sidebar-toggle .arrow {
+  transform: rotate(-90deg);
+}
+.sidebar-group-ot.open .sidebar-toggle .arrow {
+  transform: rotate(0deg);
+}
+
+/* Sidebar submenu */
+.submenu {
+  list-style: none;
+  margin-top: 4px;
+  margin-left: 10px;
+  padding-left: 5px;
+  border-left: 1px solid #374151;
+  display: none;
+}
+
+.sidebar-group.open .submenu {
+  display: block;
+}
+
+.submenu li a {
+  display: block;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 6px;
+  color: #d1d5db;
+  background-color: #020617;
+  margin-bottom: 4px;
+}
+
+.submenu li a:hover,
+.submenu li a.active {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+/* OT Claims submenu: dark rectangular buttons, white text, clear indentation */
+.submenu-ot {
+  margin-left: 12px;
+  margin-top: 6px;
+  padding-left: 8px;
+  border-left: 2px solid #374151;
+}
+.submenu-ot li a {
+  background-color: #0f172a;
+  color: #e5e7eb;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.submenu-ot li a:hover,
+.submenu-ot li a.active {
+  background-color: #1e3a8a;
+  color: #ffffff;
+}
+
+/* ==============================
+   MAIN CONTENT AREA
+============================== */
+main {
+  flex: 1;
+  padding: 30px 40px;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+/* ==============================
+   FOOTER
+============================== */
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 13px;
+  color: #6b7280;
+}

@@ -1,0 +1,98 @@
+/* ===============================================
+   JOB DETAILS PAGE - PREMIUM DESIGN
+=============================================== */
+
+.job-details-container {
+    background: #ffffff;
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
+}
+
+/* Header */
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.job-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+/* Job Type Tag */
+.job-type-tag {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.fulltime { background: #2563eb; }
+.contract { background: #f59e0b; }
+.internship { background: #10b981; }
+
+/* Meta Info */
+.job-meta {
+    display: flex;
+    gap: 25px;
+    margin: 15px 0 25px;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.job-meta i {
+    margin-right: 6px;
+    color: #1e40af;
+}
+
+/* Section Styling */
+.job-section {
+    margin-bottom: 28px;
+}
+
+.job-section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.job-section p, .job-section ul {
+    color: #374151;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.job-section ul {
+    padding-left: 20px;
+}
+
+.job-section li {
+    margin-bottom: 6px;
+}
+
+/* Apply Button */
+.apply-btn-container {
+    margin-top: 35px;
+    text-align: right;
+}
+
+.apply-btn {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.apply-btn:hover {
+    background: #1d4ed8;
+}

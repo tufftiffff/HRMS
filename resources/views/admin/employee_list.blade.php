@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Employee Overview - HRMS</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="stylesheet" href="{{ asset('css/hrms.css') }}">
+
+  <style>
+    /* Page-specific helpers */
+    .employee-page .filter-bar { flex-wrap: wrap; gap: 10px; }
+    .employee-page .filter-bar .actions { display: flex; gap: 8px; align-items: center; }
+    .btn-ghost { background: #fff; border: 1px solid #d1d5db; color: #0f172a; border-radius: 8px; padding: 8px 12px; text-decoration: none; }
+    .status-chip { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .status-active { background: #ecfdf3; color: #15803d; }
+    .status-inactive { background: #fef9c3; color: #92400e; }
+    .status-terminated { background: #fee2e2; color: #b91c1c; }
+    .muted { color: #94a3b8; font-size: 12px; }
+    .table-meta { color: #64748b; font-size: 13px; margin-top: 4px; }
+    .panel { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05); }
+    .panel h3 { margin: 0 0 8px 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .click-row { cursor: pointer; transition: background 0.15s ease; }
+    .click-row:hover { background: #f8fafc; }
+    .user-stack { display: flex; align-items: center; gap: 10px; }
+    .avatar-sm { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0; background: #f8fafc; }
+    .label-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+    .pill-approved { background: #ecfdf3; color: #166534; }
+    .pill-pending { background: #f1f5f9; color: #475569; }
+    .pill-denied { background: #fee2e2; color: #b91c1c; }
+    .pill-interview { background: #fef3c7; color: #92400e; }
+    .tab-bar { display: inline-flex; gap: 6px; background: #e5e7eb; padding: 6px; border-radius: 12px; margin-bottom: 12px; }
+    .tab-link { border: none; background: #e5e7eb; padding: 10px 14px; border-radius: 10px; font-weight: 600; color: #334155; cursor: pointer; transition: all .15s ease; }
+    .tab-link.active { background: #fff; box-shadow: 0 4px 10px rgba(15,23,42,0.12); color: #0f172a; }
+    .tab-panels { margin-top: 6px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+    .modal-overlay[hidden] { display: none; }
+    .modal-card { background: #fff; border-radius: 14px; width: min(900px, 96vw); box-shadow: 0 24px 60px rgba(15,23,42,0.25); overflow: hidden; }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; }
+    .modal-title { font-size: 18px; font-weight: 700; margin: 0; color: #0f172a; }
+    .modal-close { border: none; background: #f1f5f9; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; color: #0f172a; }
+    .modal-body { padding: 24px; display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+    @media (max-width: 1100px) { .modal-body { grid-template-columns: 1fr; } }
+    .avatar-xl { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #e2e8f0; background: #f8fafc; }
+    .pill-modal { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 700; font-size: 12px; text-transform: capitalize; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .info-item { padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; }
+    .info-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .info-value { color: #0f172a; font-weight: 700; margin-top: 4px; }
+    .modal-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .btn-ghost { background: #fff; border: 1px solid #d1d5db; color: #0f172a; border-radius: 8px; padding: 8px 12px; text-decoration: none; }
+    .service-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; }
+    .service-a { background:#e0f2fe; color:#0ea5e9; }
+    .service-b { background:#fef3c7; color:#b45309; }
+    .service-c { background:#ecfdf3; color:#15803d; }
+    .service-inactive { background:#e2e8f0; color:#475569; }
+
+    /* Applicants actions UI */
+    #tab-applicants td:last-child { text-align: right; }
+    #tab-applicants .applicant-actions { display:flex; gap:10px; justify-content:flex-end; align-items:center; }
+    #tab-applicants .applicant-action-btn {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:12px;
+      font-size:12px;
+      font-weight:700;
+      line-height:1;
+      border:1px solid #dbeafe;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    #tab-applicants .applicant-action-btn.view {
+      background:#fff;
+      color:#2563eb;
+      border-color:#bfdbfe;
+    }
+    #tab-applicants .applicant-action-btn.add {
+      background:#2563eb;
+      color:#fff;
+      border-color:#2563eb;
+      box-shadow: 0 6px 16px rgba(37,99,235,0.18);
+    }
+    #tab-applicants .applicant-action-btn.add:disabled {
+      background:#94a3b8;
+      border-color:#94a3b8;
+      box-shadow:none;
+      cursor:not-allowed;
+      opacity:0.7;
+    }
+
+    /* Employee inline status update (edit-mode) */
+    .employee-status-select {
+      display:none;
+      padding:8px 10px;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      font-size:12px;
+      background:#fff;
+    }
+    /* Enabled only when HR clicks “Edit Status” */
+    .employee-edit-mode .employee-status-select { display:inline-block; }
+    .pill-active { background:#ecfdf3; color:#15803d; }
+    .pill-inactive { background:#fef9c3; color:#92400e; }
+    .pill-terminated { background:#fee2e2; color:#b91c1c; }
+    #statusReasonModal textarea { width:100%; min-height:100px; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:14px; resize:vertical; }
+    .modal-status-reason-preview { margin-top:12px; padding:12px; border:1px solid #e5e7eb; border-radius:10px; background:#fff; font-size:14px; color:#334155; white-space:pre-wrap; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="title">Web-Based HRMS</div>
+    <div class="user-info">
+
+      <a href="{{ route('admin.profile') }}" style="text-decoration: none; color: inherit;">
+        <i class="fa-regular fa-bell"></i> &nbsp; {{ Auth::user()->name ?? 'HR Admin' }}
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    @include('admin.layout.sidebar')
+
+    <main class="employee-page">
+
+      <div class="breadcrumb">Home > Employee Management > Employee Overview</div>
+      <h2>Employee Overview</h2>
+      <p class="subtitle">Live view of every employee record stored in the database.</p>
+
+      <div class="summary-cards">
+        <div class="card"><h4>Total Employees</h4><p>{{ $totalEmployees }}</p></div>
+        <div class="card"><h4>Active Employees</h4><p>{{ $activeEmployees }}</p></div>
+        <div class="card"><h4>Departments</h4><p>{{ $departmentsCount }}</p></div>
+        <div class="card"><h4>On Leave Today</h4><p>{{ $onLeave }}</p></div>
+        <div class="card"><h4>Total Applicants</h4><p>{{ $totalApplicants }}</p></div>
+        <div class="card"><h4>Converted Applicants</h4><p>{{ $approvedApplicants }}</p></div>
+      </div>
+
+      @if (session('success'))
+        <div style="background:#ecfdf3; border:1px solid #bbf7d0; color:#166534; padding:12px 14px; border-radius:10px; margin-bottom:14px;">
+          {{ session('success') }}
+        </div>
+      @endif
+      @if ($errors->any())
+        <div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:12px 14px; border-radius:10px; margin-bottom:14px;">
+          <strong>Could not save.</strong>
+          <ul style="margin:8px 0 0 18px; padding:0;">
+            @foreach ($errors->all() as $err)
+              <li>{{ $err }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      @php $activeTab = request('tab', $tab ?? 'employees'); @endphp
+      <form class="filter-bar" method="GET" action="{{ route('admin.employee.list') }}">
+        <input type="hidden" name="tab" id="tabField" value="{{ $activeTab }}">
+        <input type="hidden" name="per_page" value="{{ request('per_page', 25) }}">
+        <input type="text" name="q" value="{{ $search }}" placeholder="Search name, email or code..." />
+
+        <select name="department">
+          <option value="">All Departments</option>
+          @foreach($departments as $dept)
+            <option value="{{ $dept->department_id }}" {{ $departmentId == $dept->department_id ? 'selected' : '' }}>
+              {{ $dept->department_name }}
+            </option>
+          @endforeach
+        </select>
+
+        <select name="position">
+          <option value="">All Positions</option>
+          @foreach($positions as $pos)
+            <option value="{{ $pos->position_id }}" {{ $positionId == $pos->position_id ? 'selected' : '' }}>
+              {{ $pos->position_name }}
+            </option>
+          @endforeach
+        </select>
+
+        <select name="status">
+          <option value="">All Statuses</option>
+          <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active</option>
+          <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+          <option value="terminated" {{ $status === 'terminated' ? 'selected' : '' }}>Terminated</option>
+        </select>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-filter"></i> Apply</button>
+          @if($search || $departmentId || $positionId || $status)
+            <a class="btn-ghost" href="{{ route('admin.employee.list', ['tab' => $activeTab]) }}"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+          @endif
+          <a class="btn-primary" href="{{ route('admin.employee.add') }}" style="text-decoration:none;"><i class="fa-solid fa-user-plus"></i> Add Employee</a>
+        </div>
+      </form>
+
+      <div class="content-section">
+        <div class="tab-bar">
+          <button class="tab-link {{ $activeTab === 'employees' ? 'active' : '' }}" data-tab="employees">Employees</button>
+          <button class="tab-link {{ $activeTab === 'applicants' ? 'active' : '' }}" data-tab="applicants">Applicants</button>
+        </div>
+
+        <div class="tab-panels">
+          <div class="panel tab-panel {{ $activeTab === 'employees' ? 'active' : '' }}" id="tab-employees">
+            <h3 style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <span style="font-size:inherit; font-weight:700;">Employees</span>
+                <span class="table-meta">Click a row to open profile</span>
+              </div>
+              <button type="button" id="employeeEditModeBtn" class="btn-ghost" style="padding:8px 12px; white-space:nowrap;">
+                Edit Status
+              </button>
+              <button
+                type="button"
+                id="employeeSaveStatusBtn"
+                class="btn-primary"
+                style="padding:8px 12px; white-space:nowrap; display:none;"
+              >
+                Save
+              </button>
+            </h3>
+            {{-- Bulk form used by “Save” button in edit mode --}}
+            <form
+              id="employeeStatusBulkForm"
+              method="POST"
+              action="{{ route('admin.employee.status.bulk_update') }}"
+              style="display:none;"
+            >
+              @csrf
+              <div id="employeeStatusBulkInputs"></div>
+            </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Department</th>
+                  <th>Position</th>
+                  <th>Status</th>
+                  <th>Service</th>
+                  <th>Email</th>
+                  <th>Hire Date</th>
+                  <th style="width:220px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse($employees as $employee)
+                  @php
+                    $user = $employee->user;
+                    $avatar = $user?->avatar_path
+                      ? asset('storage/' . $user->avatar_path)
+                      : 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? ($employee->employee_code ?? 'Employee')) . '&background=E0F2FE&color=0F172A';
+                    $statusReasonAttr = preg_replace('/\R/u', ' ', trim((string) ($employee->status_change_reason ?? '')));
+                  @endphp
+                  <tr class="click-row"
+                      data-kind="employee"
+                      data-href="{{ route('admin.employee.profile', $employee->employee_id) }}"
+                      data-name="{{ optional($employee->user)->name ?? 'N/A' }}"
+                      data-code="{{ $employee->employee_code }}"
+                      data-status="{{ $employee->employee_status }}"
+                      data-status-reason="{{ e($statusReasonAttr) }}"
+                      data-department="{{ optional($employee->department)->department_name ?? 'Not set' }}"
+                      data-position="{{ optional($employee->position)->position_name ?? 'Not set' }}"
+                      data-hire="{{ \Carbon\Carbon::parse($employee->hire_date)->format('M d, Y') }}"
+                      data-salary="{{ isset($employee->base_salary) ? number_format($employee->base_salary, 2) : 'N/A' }}"
+                      data-avatar="{{ $avatar }}"
+                      data-email="{{ optional($employee->user)->email ?? 'N/A' }}"
+                      data-phone="{{ $employee->phone ?? 'N/A' }}"
+                      data-address="{{ $employee->address ?? 'N/A' }}">
+                    <td>
+                      <div class="user-stack">
+                        <img src="{{ $avatar }}" alt="Avatar of {{ optional($employee->user)->name ?? 'employee' }}" class="avatar-sm">
+                        <div>
+                          <div style="font-weight:600; color:#0f172a;">{{ optional($employee->user)->name ?? 'N/A' }}</div>
+                          <div class="muted">{{ $employee->employee_code }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ optional($employee->department)->department_name ?? 'N/A' }}</td>
+                    <td>{{ optional($employee->position)->position_name ?? 'N/A' }}</td>
+                    <td>
+                      @php
+                        $statusClass = match($employee->employee_status) {
+                          'active' => 'status-active',
+                          'inactive' => 'status-inactive',
+                          default => 'status-terminated'
+                        };
+                      @endphp
+                      <span class="status-chip {{ $statusClass }}">{{ ucfirst($employee->employee_status) }}</span>
+                    </td>
+                    <td>
+                      @php
+                        $svc = $employee->service_snapshot ?? ['band'=>'BAND_A','label'=>'New Staff (<2 years)','inactive'=>false,'status_label'=>'New Staff (<2 years)','years'=>0,'months'=>0];
+                        $svcClass = $svc['inactive']
+                          ? 'service-inactive'
+                          : ( $svc['band'] === 'BAND_A' ? 'service-a' : ($svc['band'] === 'BAND_B' ? 'service-b' : 'service-c') );
+                        $yearsLabel = $svc['years'] . ' yrs';
+                        if ($svc['months'] > 0) { $yearsLabel .= ' ' . $svc['months'] . ' mos'; }
+                      @endphp
+                      <span class="service-chip {{ $svcClass }}" title="Calculated from Hire Date">
+                        {{ $svc['inactive'] ? $svc['status_label'] : $svc['label'] }}
+                      </span>
+                      <div class="muted">Working Years: {{ $yearsLabel }}</div>
+                    </td>
+                    <td>{{ optional($employee->user)->email ?? 'N/A' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($employee->hire_date)->format('M d, Y') }}</td>
+                    <td>
+                      <select
+                        name="employee_status"
+                        class="employee-status-select row-action"
+                        disabled
+                        data-employee-id="{{ $employee->employee_id }}"
+                        data-original-status="{{ $employee->employee_status }}"
+                      >
+                          <option value="active" {{ $employee->employee_status === 'active' ? 'selected' : '' }}>Active</option>
+                          <option value="inactive" {{ $employee->employee_status === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                          <option value="terminated" {{ $employee->employee_status === 'terminated' ? 'selected' : '' }}>Terminated</option>
+                      </select>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="8" style="text-align:center; padding:20px; color:#94a3b8;">No employees found for the selected filters.</td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+
+            @php
+              $empQuery = ['tab' => 'employees', 'q' => $search, 'department' => $departmentId, 'position' => $positionId, 'status' => $status, 'per_page' => $employees->perPage()];
+              $currentPage = $employees->currentPage();
+              $lastPage = $employees->lastPage();
+            @endphp
+            <div class="pagination-bar" style="display:flex; justify-content: space-between; align-items:center; margin-top:16px; flex-wrap: wrap; gap: 12px;">
+              <span class="muted" style="font-size:13px;">{{ $employees->total() }} records</span>
+              <div style="display:flex; align-items:center; gap: 10px;">
+                <a href="{{ route('admin.employee.list', array_merge($empQuery, ['page' => 1])) }}" class="btn-ghost" style="padding:6px 12px; text-decoration:none; {{ $currentPage <= 1 ? 'pointer-events:none; opacity:0.5;' : '' }}"><i class="fa-solid fa-angles-left"></i> First</a>
+                <a href="{{ route('admin.employee.list', array_merge($empQuery, ['page' => max(1, $currentPage - 1)])) }}" class="btn-ghost" style="padding:6px 12px; text-decoration:none; {{ $currentPage <= 1 ? 'pointer-events:none; opacity:0.5;' : '' }}"><i class="fa-solid fa-chevron-left"></i> Prev</a>
+                <span style="font-size:13px; color:#475569;">Page {{ $currentPage }} of {{ $lastPage ?: 1 }}</span>
+                <a href="{{ route('admin.employee.list', array_merge($empQuery, ['page' => min($lastPage, $currentPage + 1)])) }}" class="btn-ghost" style="padding:6px 12px; text-decoration:none; {{ $currentPage >= $lastPage ? 'pointer-events:none; opacity:0.5;' : '' }}">Next <i class="fa-solid fa-chevron-right"></i></a>
+                <a href="{{ route('admin.employee.list', array_merge($empQuery, ['page' => $lastPage ?: 1])) }}" class="btn-ghost" style="padding:6px 12px; text-decoration:none; {{ $currentPage >= $lastPage ? 'pointer-events:none; opacity:0.5;' : '' }}">Last <i class="fa-solid fa-angles-right"></i></a>
+              </div>
+              <form method="GET" action="{{ route('admin.employee.list') }}" style="display:flex; align-items:center; gap:6px;">
+                @foreach(array_filter(['tab' => 'employees', 'q' => $search, 'department' => $departmentId, 'position' => $positionId, 'status' => $status]) as $k => $v)
+                  <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                @endforeach
+                <input type="hidden" name="page" value="1">
+                <label style="font-size:13px; color:#64748b;">Show</label>
+                <select name="per_page" onchange="this.form.submit()" style="padding:6px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+                  <option value="10" {{ $employees->perPage() == 10 ? 'selected' : '' }}>10</option>
+                  <option value="25" {{ $employees->perPage() == 25 ? 'selected' : '' }}>25</option>
+                  <option value="50" {{ $employees->perPage() == 50 ? 'selected' : '' }}>50</option>
+                  <option value="100" {{ $employees->perPage() == 100 ? 'selected' : '' }}>100</option>
+                </select>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel tab-panel {{ $activeTab === 'applicants' ? 'active' : '' }}" id="tab-applicants">
+            <h3>
+              Applicants
+              <span class="table-meta">Click a row to open profile</span>
+            </h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Role</th>
+                  <th>Stage</th>
+                  <th>Email</th>
+                  <th>Updated</th>
+                  <th style="width:120px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @forelse($applicants as $applicant)
+                  @php
+                    $stage = optional($applicant->latestApplication)->app_stage ?? 'Profile';
+                    $pillClass = match(strtolower($stage)) {
+                      'approved' => 'pill-approved',
+                      'denied', 'rejected' => 'pill-denied',
+                      'interview' => 'pill-interview',
+                      default => 'pill-pending',
+                    };
+                    $lastUpdated = optional($applicant->latestApplication)->updated_at
+                        ?? optional($applicant->latestApplication)->created_at
+                        ?? $applicant->created_at;
+                    $appAvatar = $applicant->avatar_path
+                        ? asset('storage/' . $applicant->avatar_path)
+                        : 'https://ui-avatars.com/api/?name=' . urlencode($applicant->full_name ?? 'Applicant') . '&background=E0F2FE&color=0F172A';
+                    $jobTitle = optional(optional($applicant->latestApplication)->job)->job_title ?? 'Not specified';
+                    $deptName = optional(optional($applicant->latestApplication)->job)->department ?? 'N/A';
+                  @endphp
+                  <tr class="click-row"
+                      data-kind="applicant"
+                      data-href="{{ route('admin.applicants.profile', $applicant->applicant_id) }}"
+                      data-name="{{ $applicant->full_name ?? 'N/A' }}"
+                      data-stage="{{ $stage }}"
+                      data-applicantid="{{ $applicant->applicant_id }}"
+                      data-role="{{ $jobTitle }}"
+                      data-department="{{ $deptName }}"
+                      data-email="{{ optional($applicant->user)->email ?? ($applicant->email ?? 'N/A') }}"
+                      data-phone="{{ $applicant->phone ?? 'N/A' }}"
+                      data-location="{{ $applicant->location ?? 'N/A' }}"
+                      data-avatar="{{ $appAvatar }}">
+                    <td>
+                      <div class="user-stack">
+                        <img src="{{ $appAvatar }}" alt="Applicant Avatar" class="avatar-sm">
+                        <div>
+                          <div style="font-weight:600; color:#0f172a;">{{ $applicant->full_name ?? 'N/A' }}</div>
+                          <div class="muted">Applicant #{{ $applicant->applicant_id }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ optional(optional($applicant->latestApplication)->job)->job_title ?? 'Not specified' }}</td>
+                    <td><span class="label-pill {{ $pillClass }}">{{ $stage }}</span></td>
+                    <td>{{ optional($applicant->user)->email ?? ($applicant->email ?? 'N/A') }}</td>
+                    <td>{{ optional($lastUpdated)->format('M d, Y') ?? '—' }}</td>
+                    <td>
+  @php
+    $isConverted = strtolower((string) ($applicant->status ?? '')) === 'converted';
+    $eval = $applicant->latestApplication; // This might be null!
+    
+    // SAFE CHECK: Ensure $eval is not null before checking scores
+    $hasEvaluation = $eval && (!is_null($eval->overall_score) || (!is_null($eval->test_score) && !is_null($eval->interview_score)));
+    
+    $applicationId = $eval ? $eval->application_id : null;
+    $hasAppliedJob = $eval && !is_null($eval->job);
+  @endphp
+
+  @if($eval && $hasEvaluation)
+      <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+        <div class="muted" style="font-size:11px;">
+          Eval: 
+          <strong>{{ $eval->overall_score ?? '-' }}</strong>
+          @if(!is_null($eval->test_score) || !is_null($eval->interview_score))
+            <span style="color:#9ca3af;">(Test {{ $eval->test_score ?? '-' }}, Interview {{ $eval->interview_score ?? '-' }})</span>
+          @endif
+        </div>
+  @endif
+
+  @if($hasAppliedJob)
+    <div class="applicant-actions">
+      @if($isConverted)
+        <button type="button" class="applicant-action-btn add row-action" disabled>
+          <i class="fa-solid fa-user-plus"></i> Add as Employee
+        </button>
+      @else
+        <a href="{{ route('admin.employee.add', ['applicant_id' => $applicant->applicant_id]) }}" class="applicant-action-btn add row-action">
+          <i class="fa-solid fa-user-plus"></i> Add as Employee
+        </a>
+      @endif
+    </div>
+  @else
+    <span class="muted">No active application</span>
+  @endif
+</td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No applicants yet.</td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-top:16px; flex-wrap: wrap; gap: 10px;">
+              <div class="muted" style="font-size:13px;">
+                Showing {{ $applicantsPage->firstItem() ?? 0 }}-{{ $applicantsPage->lastItem() ?? 0 }} of {{ $applicantsPage->total() }} applicants
+              </div>
+              <div>
+                {{ $applicantsPage->appends(['q' => $search, 'status' => $status, 'department' => $departmentId, 'tab' => 'applicants'])->links() }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>&copy; 2025 Web-Based HRMS. All Rights Reserved.</footer>
+    </main>
+  </div>
+
+  {{-- Employee quick-view modal --}}
+  <div class="modal-overlay" id="employeeModal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title">Employee Profile</h3>
+        <button class="modal-close" id="employeeModalClose">Close</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align:left; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px;">
+          <div style="display:flex; justify-content:center; margin-bottom:10px;">
+            <img src="https://ui-avatars.com/api/?name=Employee&background=E0F2FE&color=0F172A" alt="Employee photo" id="modalAvatar" class="avatar-xl" style="width:110px; height:110px; border-width:3px;">
+          </div>
+          <h3 style="margin:0 0 6px 0;" id="modalName">Name</h3>
+          <div class="pill pill-modal" id="modalStatus">Status</div>
+          <div style="margin-top:10px; color:#475569;">Employee Code: <strong id="modalCode"></strong></div>
+          <div style="margin-top:4px; color:#475569;">Role: <strong id="modalPosition"></strong></div>
+        </div>
+        <div style="display:grid; gap:14px; margin-top:12px;">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Department</div>
+              <div class="info-value" id="modalDept"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Hire Date</div>
+              <div class="info-value" id="modalHire"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Base Salary</div>
+              <div class="info-value" id="modalSalary"></div>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value" id="modalEmail"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Phone</div>
+              <div class="info-value" id="modalPhone"></div>
+            </div>
+            <div class="info-item" style="grid-column: span 2;">
+              <div class="info-label">Address</div>
+              <div class="info-value" id="modalAddress"></div>
+            </div>
+            <div class="info-item" style="grid-column: span 2; display:none;" id="modalStatusReasonWrap">
+              <div class="info-label">Status change reason</div>
+              <div class="info-value" id="modalStatusReason" style="font-weight:500; white-space:pre-wrap;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Collect reasons before bulk status save --}}
+  <div class="modal-overlay" id="statusReasonModal" hidden>
+    <div class="modal-card" style="width:min(480px, 96vw);">
+      <div class="modal-head">
+        <h3 class="modal-title" id="statusReasonModalTitle">Reason required</h3>
+        <button type="button" class="modal-close" id="statusReasonModalClose">Close</button>
+      </div>
+      <div class="modal-body" style="display:block; padding:20px;">
+        <p style="margin:0 0 10px; color:#475569; font-size:14px;" id="statusReasonModalLead"></p>
+        <label for="statusReasonText" style="display:block; font-weight:600; margin-bottom:6px;">Reason *</label>
+        <textarea id="statusReasonText" placeholder="Briefly explain why this status is changing." maxlength="2000"></textarea>
+        <p style="margin:8px 0 0; font-size:12px; color:#94a3b8;">You’ll be asked for this as soon as you pick Inactive or Terminated in the dropdown.</p>
+        <div class="modal-actions" style="margin-top:16px;">
+          <button type="button" class="btn-primary" id="statusReasonModalContinue">Continue</button>
+          <button type="button" class="btn-ghost" id="statusReasonModalAbort">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Applicant quick-view modal --}}
+  <div class="modal-overlay" id="applicantModal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title">Applicant Profile</h3>
+        <button class="modal-close" id="applicantModalClose">Close</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align:left; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; display:flex; gap:14px; align-items:center;">
+          <img src="" alt="Applicant photo" id="appModalAvatar" class="avatar-sm" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid #e2e8f0;">
+          <div>
+            <h3 style="margin:0 0 6px 0;" id="appModalName">Name</h3>
+            <div class="pill pill-modal" id="appModalStage">Stage</div>
+            <div style="margin-top:6px; color:#475569;">Applicant ID: <strong id="appModalId"></strong></div>
+            <div style="margin-top:4px; color:#475569;">Role: <strong id="appModalRole"></strong></div>
+          </div>
+        </div>
+        <div style="display:grid; gap:14px; margin-top:12px;">
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Department</div>
+              <div class="info-value" id="appModalDept"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value" id="appModalEmail"></div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Phone</div>
+              <div class="info-value" id="appModalPhone"></div>
+            </div>
+            <div class="info-item" style="grid-column: span 2;">
+              <div class="info-label">Location</div>
+              <div class="info-value" id="appModalLocation"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /* ===== Unified Sidebar Behavior: single active, single open, persisted ===== */
+    const groups  = document.querySelectorAll('.sidebar-group');
+    const toggles = document.querySelectorAll('.sidebar-toggle');
+    const links   = document.querySelectorAll('.submenu a');
+    const STORAGE_KEY = 'hrms_sidebar_open_group';
+
+    // Normalize paths so /x and /x/ match; ignore index.php variants
+    const normPath = (u) => {
+      const url = new URL(u, location.origin);
+      let p = url.pathname
+        .replace(/\/index\.php$/i, '')
+        .replace(/\/index\.php\//i, '/')
+        .replace(/\/+$/, '');
+      return p === '' ? '/' : p;
+    };
+    const here = normPath(location.href);
+
+    // Clear any server-injected open/active to avoid double highlight
+    groups.forEach(g => {
+      g.classList.remove('open');
+      const t = g.querySelector('.sidebar-toggle');
+      if (t) t.setAttribute('aria-expanded','false');
+    });
+    links.forEach(a => a.classList.remove('active'));
+
+    // Choose exactly one active link (exact match, else best prefix)
+    let activeLink = null;
+    for (const a of links) {
+      if (normPath(a.href) === here) { activeLink = a; break; }
+    }
+    if (!activeLink) {
+      let best = null;
+      for (const a of links) {
+        const p = normPath(a.href);
+        if (p !== '/' && here.startsWith(p)) {
+          if (!best || p.length > normPath(best.href).length) best = a;
+        }
+      }
+      activeLink = best;
+    }
+
+    let openedByActive = false;
+    if (activeLink) {
+      activeLink.classList.add('active');
+      const g = activeLink.closest('.sidebar-group');
+      if (g) {
+        g.classList.add('open');
+        const t = g.querySelector('.sidebar-toggle');
+        if (t) t.setAttribute('aria-expanded','true');
+        openedByActive = true;
+        const idx = Array.from(groups).indexOf(g);
+        if (idx >= 0) localStorage.setItem(STORAGE_KEY, String(idx));
+      }
+    }
+
+    // Restore previously open group if none opened from active
+    if (!openedByActive) {
+      const idx = localStorage.getItem(STORAGE_KEY);
+      if (idx !== null && groups[idx]) {
+        groups[idx].classList.add('open');
+        const t = groups[idx].querySelector('.sidebar-toggle');
+        if (t) t.setAttribute('aria-expanded','true');
+      } else if (groups[0]) {
+        groups[0].classList.add('open');
+        const t0 = groups[0].querySelector('.sidebar-toggle');
+        if (t0) t0.setAttribute('aria-expanded','true');
+      }
+    }
+
+    // Accordion behavior + persistence
+    toggles.forEach((btn, i) => {
+      btn.setAttribute('role','button');
+      btn.setAttribute('tabindex','0');
+
+      const doToggle = (e) => {
+        e.preventDefault();
+        const group = btn.closest('.sidebar-group');
+        const isOpen = group.classList.contains('open');
+
+        groups.forEach(g => {
+          g.classList.remove('open');
+          const t = g.querySelector('.sidebar-toggle');
+          if (t) t.setAttribute('aria-expanded','false');
+        });
+
+        if (!isOpen) {
+          group.classList.add('open');
+          btn.setAttribute('aria-expanded','true');
+          localStorage.setItem(STORAGE_KEY, String(i));
+        } else {
+          btn.setAttribute('aria-expanded','false');
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      };
+
+      btn.addEventListener('click', doToggle);
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') doToggle(e);
+      });
+    });
+
+    const employeeModal = document.getElementById('employeeModal');
+    const applicantModal = document.getElementById('applicantModal');
+    const modalClose = document.getElementById('employeeModalClose');
+    const appModalClose = document.getElementById('applicantModalClose');
+    const modalFields = {
+      name: document.getElementById('modalName'),
+      code: document.getElementById('modalCode'),
+      status: document.getElementById('modalStatus'),
+      position: document.getElementById('modalPosition'),
+      dept: document.getElementById('modalDept'),
+      hire: document.getElementById('modalHire'),
+      salary: document.getElementById('modalSalary'),
+      email: document.getElementById('modalEmail'),
+      phone: document.getElementById('modalPhone'),
+      address: document.getElementById('modalAddress'),
+      avatar: document.getElementById('modalAvatar'),
+      statusReasonWrap: document.getElementById('modalStatusReasonWrap'),
+      statusReason: document.getElementById('modalStatusReason'),
+    };
+
+    const openModal = (row) => {
+      modalFields.name.textContent = row.dataset.name || 'N/A';
+      modalFields.code.textContent = row.dataset.code || '—';
+      modalFields.position.textContent = row.dataset.position || 'Not set';
+      modalFields.dept.textContent = row.dataset.department || 'Not set';
+      modalFields.hire.textContent = row.dataset.hire || '—';
+      modalFields.salary.textContent = row.dataset.salary || 'N/A';
+      modalFields.email.textContent = row.dataset.email || 'N/A';
+      modalFields.phone.textContent = row.dataset.phone || 'N/A';
+      modalFields.address.textContent = row.dataset.address || 'N/A';
+      const fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(row.dataset.name || 'Employee') + '&background=E0F2FE&color=0F172A';
+      if (modalFields.avatar) {
+        modalFields.avatar.src = row.dataset.avatar || fallbackAvatar;
+        modalFields.avatar.alt = (row.dataset.name || 'Employee') + ' photo';
+      }
+
+      const status = (row.dataset.status || 'inactive').toLowerCase();
+      modalFields.status.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      modalFields.status.className = 'pill pill-modal ' + (status === 'active' ? 'pill-active' : status === 'terminated' ? 'pill-terminated' : 'pill-inactive');
+
+      const reasonText = (row.dataset.statusReason || '').trim();
+      if (modalFields.statusReasonWrap && modalFields.statusReason) {
+        if (reasonText && (status === 'inactive' || status === 'terminated')) {
+          modalFields.statusReason.textContent = reasonText;
+          modalFields.statusReasonWrap.style.display = '';
+        } else {
+          modalFields.statusReason.textContent = '';
+          modalFields.statusReasonWrap.style.display = 'none';
+        }
+      }
+
+      employeeModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+
+    const appModalFields = {
+      name: document.getElementById('appModalName'),
+      stage: document.getElementById('appModalStage'),
+      id: document.getElementById('appModalId'),
+      role: document.getElementById('appModalRole'),
+      dept: document.getElementById('appModalDept'),
+      email: document.getElementById('appModalEmail'),
+      phone: document.getElementById('appModalPhone'),
+      location: document.getElementById('appModalLocation'),
+      avatar: document.getElementById('appModalAvatar'),
+    };
+
+    const openApplicantModal = (row) => {
+      appModalFields.name.textContent = row.dataset.name || 'N/A';
+      const stage = (row.dataset.stage || 'Profile');
+      appModalFields.stage.textContent = stage;
+      appModalFields.stage.className = 'pill pill-modal ' + (stage.toLowerCase() === 'approved' ? 'pill-approved' : stage.toLowerCase() === 'denied' ? 'pill-denied' : stage.toLowerCase() === 'interview' ? 'pill-interview' : 'pill-pending');
+      appModalFields.id.textContent = row.dataset.applicantid || '—';
+      appModalFields.role.textContent = row.dataset.role || 'Not specified';
+      appModalFields.dept.textContent = row.dataset.department || 'N/A';
+      appModalFields.email.textContent = row.dataset.email || 'N/A';
+      appModalFields.phone.textContent = row.dataset.phone || 'N/A';
+      appModalFields.location.textContent = row.dataset.location || 'N/A';
+      appModalFields.avatar.src = row.dataset.avatar || '';
+
+      applicantModal.hidden = false;
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+      employeeModal.hidden = true;
+      document.body.style.overflow = '';
+    };
+
+    const closeApplicantModal = () => {
+      applicantModal.hidden = true;
+      document.body.style.overflow = '';
+    };
+
+    // Clickable rows for profiles / modal
+    document.querySelectorAll('.click-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        const kind = row.dataset.kind;
+        const url = row.dataset.href;
+        if (kind === 'employee') {
+          e.preventDefault();
+          openModal(row);
+        } else if (kind === 'applicant') {
+          e.preventDefault();
+          openApplicantModal(row);
+        } else if (url) {
+          window.location.href = url;
+        }
+      });
+    });
+
+    modalClose?.addEventListener('click', closeModal);
+    appModalClose?.addEventListener('click', closeApplicantModal);
+    employeeModal?.addEventListener('click', (e) => {
+      if (e.target === employeeModal) closeModal();
+    });
+    applicantModal?.addEventListener('click', (e) => {
+      if (e.target === applicantModal) closeApplicantModal();
+    });
+    document.querySelectorAll('.row-action').forEach(btn => {
+      ['click','mousedown','mouseup'].forEach(ev => btn.addEventListener(ev, e => e.stopPropagation()));
+    });
+
+    // Employee status edit mode (dropdown appears + save applies changes)
+    const employeesPanel = document.getElementById('tab-employees');
+    const editModeBtn = document.getElementById('employeeEditModeBtn');
+    const saveStatusBtn = document.getElementById('employeeSaveStatusBtn');
+    const statusSelects = document.querySelectorAll('.employee-status-select');
+
+    let editMode = false;
+    let suppressStatusChange = false;
+
+    const setEditMode = (on) => {
+      editMode = !!on;
+      if (employeesPanel) employeesPanel.classList.toggle('employee-edit-mode', editMode);
+      if (editModeBtn) editModeBtn.textContent = editMode ? 'Cancel' : 'Edit Status';
+      if (saveStatusBtn) saveStatusBtn.style.display = editMode ? 'inline-flex' : 'none';
+      statusSelects.forEach(sel => {
+        sel.disabled = !editMode;
+        if (!editMode) {
+          const original = sel.dataset.originalStatus;
+          if (original) sel.value = original;
+          delete sel.dataset.capturedReason;
+          delete sel.dataset.preChangeStatus;
+        } else {
+          delete sel.dataset.capturedReason;
+          sel.dataset.preChangeStatus = sel.value;
+        }
+      });
+    };
+
+    if (editModeBtn && statusSelects.length > 0) {
+      editModeBtn.addEventListener('click', () => setEditMode(!editMode));
+    }
+
+    const statusChangeNeedsReason = (original, current) => {
+      if (!original || !current || original === current) return false;
+      return current === 'inactive' || current === 'terminated';
+    };
+
+    const statusReasonModal = document.getElementById('statusReasonModal');
+    const statusReasonLead = document.getElementById('statusReasonModalLead');
+    const statusReasonText = document.getElementById('statusReasonText');
+    const statusReasonContinue = document.getElementById('statusReasonModalContinue');
+    const statusReasonAbort = document.getElementById('statusReasonModalAbort');
+    const statusReasonClose = document.getElementById('statusReasonModalClose');
+
+    const closeStatusReasonModal = () => {
+      if (statusReasonModal) statusReasonModal.hidden = true;
+      const em = document.getElementById('employeeModal');
+      if (em && !em.hidden) return;
+      document.body.style.overflow = '';
+    };
+
+    /**
+     * Ask for remark once when the user picks Inactive/Terminated (not on Save).
+     * resolve(string) = confirmed text; resolve(null) = cancelled.
+     */
+    const promptStatusReasonOnce = (name, code, newStatus) => {
+      return new Promise((resolve) => {
+        if (!statusReasonModal || !statusReasonLead || !statusReasonText || !statusReasonContinue) {
+          resolve(null);
+          return;
+        }
+        const label = newStatus === 'terminated' ? 'Terminated' : 'Inactive';
+        const codePart = code ? ' (' + code + ')' : '';
+        statusReasonLead.textContent = 'Provide a reason for setting ' + name + codePart + ' to ' + label + '.';
+        statusReasonText.value = '';
+
+        const cleanup = () => {
+          statusReasonContinue.onclick = null;
+          if (statusReasonAbort) statusReasonAbort.onclick = null;
+          if (statusReasonClose) statusReasonClose.onclick = null;
+          statusReasonModal.onclick = null;
+          closeStatusReasonModal();
+        };
+
+        const onContinue = () => {
+          const text = (statusReasonText.value || '').trim();
+          if (!text) {
+            statusReasonText.focus();
+            return;
+          }
+          cleanup();
+          resolve(text);
+        };
+        const onAbort = () => {
+          cleanup();
+          resolve(null);
+        };
+
+        statusReasonContinue.onclick = onContinue;
+        if (statusReasonAbort) statusReasonAbort.onclick = onAbort;
+        if (statusReasonClose) statusReasonClose.onclick = onAbort;
+        statusReasonModal.onclick = (e) => {
+          if (e.target === statusReasonModal) onAbort();
+        };
+
+        statusReasonModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        statusReasonText.focus();
+      });
+    };
+
+    statusSelects.forEach(sel => {
+      sel.addEventListener('focus', () => {
+        if (!editMode) return;
+        sel.dataset.preChangeStatus = sel.value;
+      });
+
+      sel.addEventListener('change', () => {
+        if (!editMode || suppressStatusChange) return;
+
+        const from = sel.dataset.preChangeStatus ?? sel.dataset.originalStatus;
+        const to = sel.value;
+        const empId = sel.dataset.employeeId;
+        const tr = sel.closest('tr');
+        const empName = (tr && tr.dataset.name) ? tr.dataset.name : (empId || 'Employee');
+        const empCode = (tr && tr.dataset.code) ? tr.dataset.code : '';
+
+        if (from === to) {
+          sel.dataset.preChangeStatus = to;
+          return;
+        }
+
+        if (!statusChangeNeedsReason(from, to)) {
+          delete sel.dataset.capturedReason;
+          sel.dataset.preChangeStatus = to;
+          return;
+        }
+
+        promptStatusReasonOnce(empName, empCode, to).then((reason) => {
+          if (reason == null) {
+            suppressStatusChange = true;
+            sel.value = from;
+            suppressStatusChange = false;
+            return;
+          }
+          sel.dataset.capturedReason = reason;
+          sel.dataset.preChangeStatus = to;
+        });
+      });
+    });
+
+    if (saveStatusBtn) {
+      saveStatusBtn.addEventListener('click', () => {
+        const payload = {};
+        const reasons = {};
+
+        for (const sel of statusSelects) {
+          const empId = sel.dataset.employeeId;
+          const original = sel.dataset.originalStatus;
+          const current = sel.value;
+          if (!empId || !current) continue;
+          if (!original || current === original) continue;
+
+          payload[empId] = current;
+
+          if (statusChangeNeedsReason(original, current)) {
+            const r = (sel.dataset.capturedReason || '').trim();
+            if (!r) {
+              const tr = sel.closest('tr');
+              const label = (tr && tr.dataset.name) ? tr.dataset.name : empId;
+              alert('Add a remark for ' + label + ': change their status to Inactive or Terminated again so the reason dialog appears, or use Cancel to discard edits.');
+              return;
+            }
+            reasons[empId] = r;
+          }
+        }
+
+        if (Object.keys(payload).length === 0) {
+          setEditMode(false);
+          return;
+        }
+
+        const bulkForm = document.getElementById('employeeStatusBulkForm');
+        const inputs = document.getElementById('employeeStatusBulkInputs');
+        if (!bulkForm || !inputs) return;
+
+        inputs.innerHTML = '';
+        Object.entries(payload).forEach(([id, status]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = `statuses[${id}]`;
+          input.value = status;
+          inputs.appendChild(input);
+        });
+        Object.entries(reasons).forEach(([id, text]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = `status_reasons[${id}]`;
+          input.value = text;
+          inputs.appendChild(input);
+        });
+
+        bulkForm.submit();
+      });
+    }
+
+    // Tabs: Employees / Applicants
+    const tabs = document.querySelectorAll('.tab-link');
+    const panels = {
+      employees: document.getElementById('tab-employees'),
+      applicants: document.getElementById('tab-applicants')
+    };
+    const tabField = document.getElementById('tabField');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        Object.entries(panels).forEach(([key, el]) => {
+          if (!el) return;
+          el.classList.toggle('active', key === target);
+        });
+        if (tabField) tabField.value = target;
+      });
+    });
+  });
+  </script>
+</body>
+</html>

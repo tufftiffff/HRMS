@@ -1,0 +1,72 @@
+/* ==============================
+   APPLY FORM PAGE
+============================== */
+
+.apply-form-container {
+    max-width: 700px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+.apply-form .form-group {
+    margin-bottom: 20px;
+}
+
+.apply-form label {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.apply-form label span {
+    color: #dc2626; /* red asterisk */
+}
+
+.apply-form input[type="text"],
+.apply-form input[type="email"],
+.apply-form input[type="file"],
+.apply-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.25s;
+    background: #f9fafb;
+}
+
+.apply-form input:focus,
+.apply-form textarea:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+.apply-form textarea {
+    resize: vertical;
+}
+
+.form-actions {
+    text-align: right;
+    margin-top: 25px;
+}
+
+.btn-submit {
+    background: #2563eb;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.btn-submit:hover {
+    background: #1e40af;
+}

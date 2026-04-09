@@ -1,0 +1,18 @@
+/* LAYOUT */
+@import url('layout/base.css');
+@import url('layout/layout.css');
+@import url('layout/utilities.css');
+
+/* COMPONENTS */
+@import url('components/forms.css');
+@import url('components/buttons.css');
+@import url('components/tables.css');
+@import url('components/cards.css');
+
+/* MODULE-SPECIFIC */
+@import url('modules/dashboard.css');
+@import url('modules/announcement.css');
+@import url('modules/profile.css');
+@import url('modules/recruitment.css');
+@import url('modules/kpi_employee.css');
+@import url('modules/employee.css');

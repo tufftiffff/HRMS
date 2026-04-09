@@ -1,0 +1,17 @@
+/* ==============================
+   RECRUITMENT MODULE
+============================== */
+
+.open-positions {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.open-positions h3 {
+  margin-bottom: 15px;
+  color: #1e3a8a;
+  font-size: 18px;
+}

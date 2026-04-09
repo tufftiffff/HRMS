@@ -1,0 +1,107 @@
+/* ==========================================
+   GLOBAL FONT
+========================================== */
+* {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   HEADER (IDENTICAL TO ADMIN)
+========================================== */
+header {
+  background: #1e40af;
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header .title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   LAYOUT CONTAINER / SIDEBAR
+========================================== */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #0f172a, #1e3a8a);
+  color: #9ca3af;
+  padding: 25px 20px;
+}
+
+/* EXACT LINK STYLE FROM ADMIN */
+.app-sidebar ul {
+  list-style: none;
+  margin-top: 20px;
+}
+
+.app-sidebar li {
+  margin-bottom: 15px;
+}
+
+.app-sidebar a {
+  text-decoration: none;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.app-sidebar a:hover,
+.app-sidebar a.active {
+  background-color: #2563eb;
+  color: white;
+  transform: translateX(5px);
+}
+
+/* LOGOUT SECTION */
+.sidebar-bottom {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #374151;
+}
+
+.logout-link {
+  color: #fca5a5 !important;
+}
+
+.logout-link:hover {
+  background-color: #dc2626 !important;
+  color: white !important;
+  transform: translateX(5px);
+}
+
+/* ==========================================
+   MAIN CONTENT (IDENTICAL ADMIN SPACING)
+========================================== */
+.app-main {
+  flex: 1;
+  padding: 30px 40px;
+  background: #f5f6fa;
+}
+
+h2.page-title {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  color: #4b5563;
+  margin-bottom: 20px;
+}

@@ -1,0 +1,287 @@
+/* ==============================
+   EMPLOYEE KPI PAGE CSS
+   For: appraisal_kpi_employee.blade.php
+============================== */
+
+/* Employee Header Card */
+.kpi-employee-header {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    margin-bottom: 25px;
+}
+
+.kpi-employee-header .detail-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kpi-employee-header .detail-title i {
+    color: #2563eb;
+}
+
+.kpi-employee-header .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.kpi-employee-header .meta-row i {
+    color: #1e40af;
+    margin-right: 6px;
+}
+
+/* KPI Table Container */
+.kpi-table-container {
+    background: #ffffff;
+    padding: 22px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* KPI Table Styling */
+.kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.kpi-table thead {
+    background: #eef2ff;
+}
+
+.kpi-table th {
+    padding: 12px 14px;
+    color: #1e3a8a;
+    font-weight: 600;
+    border-bottom: 2px solid #d1d5db;
+}
+
+.kpi-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.kpi-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* Link to KPI detail */
+.kpi-link {
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.kpi-link:hover {
+    text-decoration: underline;
+}
+
+/* KPI Status Badges */
+.kpi-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.kpi-in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.kpi-pending {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.kpi-overdue {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Action Buttons */
+.kpi-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.kpi-btn-small {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.kpi-btn-view {
+    background: #f3f4f6;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+}
+
+.kpi-btn-view:hover {
+    background: #e5e7eb;
+}
+
+.kpi-btn-review {
+    background: #2563eb;
+    color: white;
+}
+
+.kpi-btn-review:hover {
+    background: #1d4ed8;
+}
+
+/* Add KPI Button */
+.kpi-add-btn {
+    display: inline-block;
+    background: #10b981;
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 12px;
+    text-decoration: none;
+}
+
+.kpi-add-btn:hover {
+    background: #059669;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .kpi-employee-header .meta-row {
+        flex-direction: column;
+    }
+
+    .kpi-actions {
+        flex-direction: column;
+    }
+}
+
+/* ==============================
+   KPI REVIEW MODAL (UI-only)
+============================== */
+.kpi-modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.kpi-modal-overlay.show{ display: flex; }
+
+.kpi-modal{
+  width: 100%;
+  max-width: 760px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 16px 50px rgba(15, 23, 42, 0.22);
+  overflow: hidden;
+}
+
+.kpi-modal-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.kpi-modal-header h3{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.kpi-modal-header p{
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.kpi-modal-close{
+  border: none;
+  background: #f3f4f6;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#111827;
+}
+.kpi-modal-close:hover{ background:#e5e7eb; }
+
+.kpi-modal-body{
+  padding: 18px 20px 8px;
+}
+
+.kpi-meta-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.kpi-meta-item{
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background:#ffffff;
+}
+
+.kpi-meta-item .label{
+  display:block;
+  font-size: 12px;
+  color:#6b7280;
+  margin-bottom: 6px;
+}
+.kpi-meta-item .value{
+  font-size: 13px;
+  font-weight: 600;
+  color:#111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-modal-footer{
+  padding: 14px 20px 18px;
+  border-top: 1px solid #e5e7eb;
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media (max-width: 640px){
+  .kpi-meta-grid{ grid-template-columns: 1fr; }
+}
+
+/* Extra KPI badge states (optional but useful) */
+.kpi-under-review { background:#e0f2fe; color:#0369a1; }
+.kpi-completed { background:#dcfce7; color:#166534; }
+
